@@ -1,0 +1,12 @@
+# penoptes configuration (YAML)
+
+id: "cmd(hostname -s)"
+watchlist: "/etc/penoptes.watchlist"
+state_directory: "/var/lib/penoptes"
+remote_repository: "git://enterprise.rz.puzzle.ch/penoptes"
+
+mailfrom: monitor-sender@puzzle.ch
+mailto: monitor@puzzle.ch
+
+add_cycle: 1h
+change_cycle: 5m

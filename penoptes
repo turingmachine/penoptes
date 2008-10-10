@@ -22,6 +22,7 @@ require 'yaml'
 require 'optparse'
 require 'fileutils'
 require 'socket'
+require 'rubygems'
 require 'git'
 
 class Penoptes
@@ -82,7 +83,6 @@ private # are methods below here
       terminate 1
     end
   end
-
 end
 
 class Configuration
@@ -92,10 +92,10 @@ class Configuration
     watchlist => '/etc/penoptes.watchlist',
     state_directory => '/var/lib/penoptes',
     remote_repository => 'off',
-    mailfrom => root,
-    mailto => root,
-    add_cycle: 1h,
-    change_cycle: 15m,
+    mailfrom => 'root',
+    mailto => 'root',
+    add_cycle => '1h',
+    change_cycle => '15m',
   }
 
   def metaclass; class << self; self; end; end

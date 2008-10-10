@@ -10,3 +10,8 @@ mailto: monitor@puzzle.ch
 
 add_cycle: 1h
 change_cycle: 5m
+
+hello:
+  - item1
+  - item
+  - itemdd

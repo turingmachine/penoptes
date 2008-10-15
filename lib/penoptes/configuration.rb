@@ -18,19 +18,20 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 require 'yaml'
+require 'socket'
 
 class Configuration
   DEFAULTS = {
-    configuration_file => '/etc/penoptes.yml',
-    id => Socket.gethostname,
-    watchlist => '/etc/penoptes.watchlist',
-    state_directory => '/var/lib/penoptes',
-    remote_repository => 'off',
-    mail_from => 'root',
-    mail_to => 'root',
-    add_cycle => '1h',
-    change_cycle => '15m',
-    always_fast => 'off'
+    'configuration_file' => '/etc/penoptes.yml',
+    'id' => Socket.gethostname,
+    'watchlist' => '/etc/penoptes.watchlist',
+    'state_directory' => '/var/lib/penoptes',
+    'remote_repository' => 'off',
+    'mail_from' => 'root',
+    'mail_to' => 'root',
+    'add_cycle' => '1h',
+    'change_cycle' => '15m',
+    'always_fast' => 'off'
   }
 
   def metaclass; class << self; self; end; end

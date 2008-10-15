@@ -1,22 +1,21 @@
 #!/usr/bin/env ruby
 
-# Copyright (C) 2008 Simon Josi <josi@puzzle.ch>
-# 
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of the
-# License, or (at your option) any later version.
-# 
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-# 
-# penoptes - monitor text files for changes
+# penoptes - monitor text file for changes
+#
+# Copyright (C) 2008  Simon Josi <josi@puzzle.ch>
+#
+# This program is free software: you can redistribute it and/or 
+# modify it under the terms of the GNU General Public License 
+# as published by the Free Software Foundation, either version 3 
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License 
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 require 'yaml'
 require 'optparse'
@@ -34,7 +33,7 @@ class Penoptes
   end
 
 
-private # are methods below here
+private
 
   # register signal handlers
   def register_signal_handlers
@@ -56,16 +55,16 @@ private # are methods below here
         opts.banner = "Usage: #{scriptname} [options]"
 
         opts.on("-v", "--verbose", "show whats going on") do |d|
-          @cli['verbose'] = true
+          @cli_switches['verbose'] = true
         end
 
         opts.on("-c", "--configuration", 
                 "specify a configuration file other than /etc/penoptes.yml") do |s|
-          @cli['configuration'] = s
+          @cli_switches['configuration'] = s
         end
 
         opts.on("-f", "--fast", "don't slow down io") do |s|
-          @cli['fast'] = true
+          @cli_switches['fast'] = true
         end
 
         opts.on("-h", "--help",  "display this help and exit") do |h|
@@ -92,10 +91,11 @@ class Configuration
     watchlist => '/etc/penoptes.watchlist',
     state_directory => '/var/lib/penoptes',
     remote_repository => 'off',
-    mailfrom => 'root',
-    mailto => 'root',
+    mail_from => 'root',
+    mail_to => 'root',
     add_cycle => '1h',
     change_cycle => '15m',
+    always_fast => 'off'
   }
 
   def metaclass; class << self; self; end; end
@@ -119,10 +119,15 @@ class Watchlist
 end
 
 class Report
+  def initialize
 
+  end
 end
 
 class Repository
+  def initialize
 
+  end
 end
 
+# EOF

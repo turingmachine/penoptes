@@ -17,12 +17,7 @@
 # You should have received a copy of the GNU General Public License 
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-require 'yaml'
 require 'optparse'
-require 'fileutils'
-require 'socket'
-require 'rubygems'
-require 'git'
 
 class Penoptes
   def initialize
@@ -82,52 +77,6 @@ private
       puts "Try \`#{scriptname} --help' for more information."
       terminate 1
     end
-  end
-end
-
-class Configuration
-  DEFAULTS = {
-    configuration_file => '/etc/penoptes.yml',
-    id => Socket.gethostname,
-    watchlist => '/etc/penoptes.watchlist',
-    state_directory => '/var/lib/penoptes',
-    remote_repository => 'off',
-    mail_from => 'root',
-    mail_to => 'root',
-    add_cycle => '1h',
-    change_cycle => '15m',
-    always_fast => 'off'
-  }
-
-  def metaclass; class << self; self; end; end
-
-  def initialize(configfile = CONFIG_FILE)
-    unless File.exists? configfile
-      raise IOError, "#{configfile}: No such file or directory."
-    end
-
-    YAML::load_file(configfile).each do |key, value|
-      instance_variable_set "@" + key, value
-      metaclass.module_eval { attr_reader key }
-    end
-  end
-end
-
-class Watchlist
-  def initialize
-
-  end
-end
-
-class Report
-  def initialize
-
-  end
-end
-
-class Repository
-  def initialize
-
   end
 end
 

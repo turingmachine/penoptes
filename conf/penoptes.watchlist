@@ -1,4 +1,68 @@
 # penoptes watchlist
+#
+# The watchlist does contain one entry per line.
+# Each line will be expanded by penoptes if necessary.
+#
+# Example:
+# /etc/*.conf
+# Will match all files ending with .conf in /etc, not
+# respecting subdirectories.
+#
+# Besides globs, prenoptes also supports special watchlist 
+# expansions with the following prefixes per entry:
+#
+# syntax:
+# f:[find regex][!exclude regex]:path
+#
+# Entries present in this form will be processed by find.
+# The optional find pattern is passed to the -name argument and
+# the optional exclude pattern is passed to an extended 
+# inverse grep statement, to which the find output is piped trough.
+#
+# examples:
+# f:.ht*:/var/www
+# This statement will match all .ht* files beneath /var/www.
+#
+# f:!dumpdates|amandates:/etc
+# This statement will match all files beneath /etc 
+# except files named dumpdates or amandates.
+#
+# syntax:
+# c:filename:command
+# Execute a command and monitor it's output for changes.
+#
+# c:services:chkconfig --list | grep :on
+# This will produce a list of all enabled services, which will
+# be saved in a file called services in /var/lib/ucm/command
+# and then automatically be added to the watchlist.
+#
+# Each line can contain a comment, which is appended 
+# at the end of the line using the delimiter %#%.
+# If an entry with a comment is changed, the comment 
+# will be visible in the change report.
+#
+# example:
+# /etc/*.conf%#%this is a comment applying to all .conf files in /etc
+#
+#########################################################################
 
-/etc
-/var/lib
+'/var/www': {
+  include: '.ht*',
+  exclude: '.ht*'
+}
+
+'/etc/*.conf': {
+  comment: 'this is a comment applying to all .conf files in /etc'
+}
+
+# f:!dumpdates|amandates:/etc
+# # This statement will match all files beneath /etc 
+# # except files named dumpdates or amandates.
+
+'/etc': {
+  exclude: [
+    'dumpdates',
+    'amandate'
+  ]
+}
+

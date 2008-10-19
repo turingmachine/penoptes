@@ -18,6 +18,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 require 'optparse'
+require 'penoptes/configuration'
+require 'penoptes/watchlist'
+require 'penoptes/repository'
+require 'penoptes/report'
 
 class Penoptes
   def initialize

@@ -20,30 +20,42 @@
 require 'yaml'
 require 'socket'
 
-class Configuration
-  DEFAULTS = {
-    'configuration_file' => '/etc/penoptes.yml',
-    'id' => Socket.gethostname,
-    'watchlist' => '/etc/penoptes.watchlist',
-    'state_directory' => '/var/lib/penoptes',
-    'remote_repository' => 'off',
-    'mail_from' => 'root',
-    'mail_to' => 'root',
-    'add_cycle' => '1h',
-    'change_cycle' => '15m',
-    'always_fast' => 'off'
-  }
+module Penoptes
+  class Configuration
+    DEFAULTS = {
+      'id'                  => Socket.gethostname,
+      'configuration_file'  => '/etc/penoptes.conf',
+      'watchlist'           => '/etc/penoptes.watchlist',
+      'state_directory'     => '/var/lib/penoptes',
+      'remote_repository'   => 'off',
+      'mail_from'           => 'root',
+      'mail_to'             => 'root',
+      'add_cycle'           => '1h',
+      'change_cycle'        => '15m',
+      'fast'                => 'off'
+    }
 
-  def metaclass; class << self; self; end; end
+    def metaclass; class << self; self; end; end
 
-  def initialize(configfile = CONFIG_FILE)
-    unless File.exists? configfile
-      raise IOError, "#{configfile}: No such file or directory."
-    end
+    def initialize(configfile = DEFAULTS['configuration_file'],)
+      if configfile.nil?
+        configfile = DEFAULTS['configuration_file']
+      end
 
-    YAML::load_file(configfile).each do |key, value|
-      instance_variable_set "@" + key, value
-      metaclass.module_eval { attr_reader key }
+      unless File.exists? configfile
+        raise LoadError, "#{configfile}: No such file or directory."
+      end
+
+      DEFAULTs.each do |key, value|
+        instance_variable_set "@" + key, value
+        metaclass.module_eval { attr_writer key }
+      end
+
+      YAML::load_file(configfile).each do |key, value|
+        if DEFAULTS.has_key? key
+          self.send key, value
+        end
+      end
     end
   end
 end

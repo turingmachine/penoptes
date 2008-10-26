@@ -20,9 +20,11 @@
 require 'rubygems'
 require 'git'
 
-class Repository
-  def initialize
+module Penoptes
+  class Repository
+    def initialize
 
+    end
   end
 end
 

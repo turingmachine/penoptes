@@ -17,19 +17,75 @@
 # You should have received a copy of the GNU General Public License 
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+require 'yaml'
+require 'find'
 require 'fileutils'
 
-class Watchlist
-  def initialize
-
+# our user defined String methods
+class String
+  def is_true?
+    self[/^(1|on|yes|true|enabled)$/]
   end
-
-  def parse
-
+  def is_false?
+    self[/^(0|off|no|false|disabled)$/]
   end
+end
 
-  def iterate
+module Penoptes
+  class WatchlistError < SyntaxError; end
 
+  class Watchlist
+    def initialize(watchlist)
+      if watchlist.nil? or not File.exists? watchlist
+        raise LoadError, "#{watchlist}: No such file or directory."
+      end
+#    begin 
+        @entries = parse YAML::load_file(watchlist)
+#    rescue ArgumentError
+#      raise WatchlistError, $!
+#    end
+    end
+
+    def parse(yaml)
+      entries = Array.new
+
+      yaml.each do |entry|
+        pathspec = entry.first
+        options = entry.last
+
+        # globbing or recursive?
+        mode = 'globbing'
+        if FileTest.directory?(pathspec) and not options.has_key?('recursive')
+          mode = 'recursive'
+        end
+        if options.has_key?('recursive') and options['recursive'].is_false?
+          mode = 'globbing'
+        end
+
+        # we do a find on entry.first
+        if mode.eql? 'recursive'
+          Find.find(pathspec) do |path|
+            if FileTest.directory?(path)
+              if File.basename(path)[0] == ?.
+                Find.prune
+              else
+                next
+              end
+            else
+              entries.push path if FileTest.file? path
+            end
+          end
+
+        # entry has to be expanded with globbing (no recursion)
+        else
+          entries.push Dir.glob(pathspec)
+        end
+      end
+      puts entries
+    end
+
+    def iterate &block
+    end
   end
 end
 

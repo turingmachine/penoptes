@@ -24,7 +24,7 @@ module Penoptes
   class Configuration
     DEFAULTS = {
       'id'                  => Socket.gethostname,
-      'configuration_file'  => '/etc/penoptes.conf',
+      'configuration'       => '/etc/penoptes.conf',
       'watchlist'           => '/etc/penoptes.watchlist',
       'state_directory'     => '/var/lib/penoptes',
       'remote_repository'   => 'off',
@@ -37,24 +37,32 @@ module Penoptes
 
     def metaclass; class << self; self; end; end
 
-    def initialize(configfile = DEFAULTS['configuration_file'],)
-      if configfile.nil?
-        configfile = DEFAULTS['configuration_file']
+    def initialize(options)
+      if options.respond_to? 'configuration'
+        configfile = options.configuration
+      else
+        configfile  = DEFAULTS['configuration']
       end
 
       unless File.exists? configfile
         raise LoadError, "#{configfile}: No such file or directory."
       end
 
-      DEFAULTs.each do |key, value|
-        instance_variable_set "@" + key, value
-        metaclass.module_eval { attr_writer key }
+      DEFAULTS.each do |key, value|
+        unless key.eql? 'configuration'
+          instance_variable_set "@" + key, value
+          metaclass.module_eval { attr_reader key }
+        end
       end
 
       YAML::load_file(configfile).each do |key, value|
         if DEFAULTS.has_key? key
-          self.send key, value
+          instance_variable_set "@" + key, value
         end
+      end
+
+      if options.respond_to? 'watchlist'
+        @watchlist = options.watchlist 
       end
     end
   end

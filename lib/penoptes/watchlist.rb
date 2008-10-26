@@ -37,32 +37,39 @@ module Penoptes
   class Watchlist
     def initialize(watchlist)
       if watchlist.nil? or not File.exists? watchlist
-        raise LoadError, "#{watchlist}: No such file or directory."
+        raise LoadError, "#{watchlist}: No such file or directory"
       end
-#    begin 
-        @entries = parse YAML::load_file(watchlist)
-#    rescue ArgumentError
-#      raise WatchlistError, $!
-#    end
+
+      unless @watchlist = YAML::load_file(watchlist)
+        raise LoadError, "Watchlist is empty"
+      end
     end
 
-    def parse(yaml)
-      entries = Array.new
+    def parse
+      @files = Hash.new
+      @comments = Hash.new
+      @commands = Hash.new
 
-      yaml.each do |entry|
+      @watchlist.each do |entry|
         pathspec = entry.first
         options = entry.last
 
+        # skip to next entry if this one specifies a command
+        if options.respond_to? 'command'
+          @commands[pathspec] = options.command
+          next
+        end
+
         # globbing or recursive?
         mode = 'globbing'
-        if FileTest.directory?(pathspec) and not options.has_key?('recursive')
+        unless options.has_key?('recursive')
           mode = 'recursive'
         end
         if options.has_key?('recursive') and options['recursive'].is_false?
           mode = 'globbing'
         end
 
-        # we do a find on entry.first
+        # use find if mode is recursive
         if mode.eql? 'recursive'
           Find.find(pathspec) do |path|
             if FileTest.directory?(path)
@@ -72,16 +79,25 @@ module Penoptes
                 next
               end
             else
-              entries.push path if FileTest.file? path
+              if FileTest.file? path
+                @entries[path] = path
+                if options.respond_to? 'comment'
+                  @comments[options.comment] ||= Array.new
+                  @comments[options.comment] << path
+                end
+              end
             end
           end
 
-        # entry has to be expanded with globbing (no recursion)
+        # expand entry with globbing
         else
-          entries.push Dir.glob(pathspec)
+          Dir.glob(pathspec).each do |path|
+            
+          end
         end
       end
-      puts entries
+
+      return self
     end
 
     def iterate &block

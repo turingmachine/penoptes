@@ -9,13 +9,11 @@
 
 '/var/www': {
   include: '\.ht*',
-  recursive: 'false'
+  recursive: false
 }
 
 'services': {
   command: 'chkconfig --list | grep :on',
-  include: '.ht*',
-  exclude: '.ht*'
 }
 
 '/etc/*.conf': {

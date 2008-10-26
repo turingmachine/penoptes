@@ -37,20 +37,26 @@ module Penoptes
       
       @options = parse_options
       begin
-        @configuration = \
-        Penoptes::Configuration.new
+        @configuration = Penoptes::Configuration.new @options
       rescue LoadError
         puts 'penoptes: could not load configuration', $!
         terminate 1
       end
 
-      @watchlist = Penoptes::Watchlist.new @configuration.watchlist
+      begin
+        @watchlist = Penoptes::Watchlist.new @configuration.watchlist
+      rescue LoadError
+        puts 'penoptes: could not load watchlist', $!
+      end
+
       @repository = Penoptes::Repository.new
       @report = Penoptes::Report.new
     end
 
     def run
-      
+      @watchlist.parse.iterate do |entry|
+        
+      end
     end
 
     # register signal handlers

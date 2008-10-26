@@ -1,0 +1,23 @@
+'/etc/*.conf':
+
+'/etc': {
+  exclude: [ 
+    dumpdates,
+    amdates
+  ]
+}
+
+'/var/www': {
+  include: '\.ht*',
+  recursive: 'false'
+}
+
+'services': {
+  command: 'chkconfig --list | grep :on',
+  include: '.ht*',
+  exclude: '.ht*'
+}
+
+'/etc/*.conf': {
+  comment: 'this is a comment applying to all .conf files in /etc'
+}

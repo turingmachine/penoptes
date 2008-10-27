@@ -21,6 +21,7 @@ require 'rubygems'
 require 'git'
 
 module Penoptes
+  class RepositoryError < StandardError; end
   class Repository
     def initialize
 

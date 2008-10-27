@@ -18,6 +18,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 module Penoptes
+  class ReportError < StandardError; end
   class Report
     def initialize
 

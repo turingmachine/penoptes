@@ -21,7 +21,7 @@ require 'yaml'
 require 'find'
 require 'fileutils'
 
-# our user defined String methods
+# our user defined methods for String class
 class String
   def is_true?
     self[/^(1|on|yes|true|enabled)$/]
@@ -32,22 +32,20 @@ class String
 end
 
 module Penoptes
-  class WatchlistError < SyntaxError; end
-
+  class WatchlistError < StandardError; end
   class Watchlist
     def initialize(watchlist)
       if watchlist.nil? or not File.exists? watchlist
-        raise LoadError, "#{watchlist}: No such file or directory"
+        raise WatchlistError, "#{watchlist}: No such file or directory"
       end
 
       unless @watchlist = YAML::load_file(watchlist)
-        raise LoadError, "Watchlist is empty"
+        raise WatchlistError, "Watchlist is empty"
       end
     end
 
     def parse
       @files = Hash.new
-      @comments = Hash.new
       @commands = Hash.new
 
       @watchlist.each do |entry|
@@ -81,10 +79,6 @@ module Penoptes
             else
               if FileTest.file? path
                 @entries[path] = path
-                if options.respond_to? 'comment'
-                  @comments[options.comment] ||= Array.new
-                  @comments[options.comment] << path
-                end
               end
             end
           end

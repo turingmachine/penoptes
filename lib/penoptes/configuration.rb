@@ -21,7 +21,10 @@ require 'yaml'
 require 'socket'
 
 module Penoptes
+  class ConfigurationError < StandardError; end
   class Configuration
+
+    # define default values for all configuration options
     DEFAULTS = {
       'id'                  => Socket.gethostname,
       'configuration'       => '/etc/penoptes.conf',
@@ -35,19 +38,25 @@ module Penoptes
       'fast'                => 'off'
     }
 
+    # metaclass access method
     def metaclass; class << self; self; end; end
 
     def initialize(options)
+      # use cli supplied configuration file if available,
+      # use default value otherwise
       if options.respond_to? 'configuration'
         configfile = options.configuration
       else
         configfile  = DEFAULTS['configuration']
       end
 
+      # raise an error if configuration file does not exist
       unless File.exists? configfile
-        raise LoadError, "#{configfile}: No such file or directory."
+        raise ConfigurationError, "#{configfile}: No such file or directory."
       end
 
+      # set an instance variable with additonal attr_reader 
+      # for each default value except configuration
       DEFAULTS.each do |key, value|
         unless key.eql? 'configuration'
           instance_variable_set "@" + key, value
@@ -55,12 +64,15 @@ module Penoptes
         end
       end
 
+      # parse configuration and overwrite each instance variable with 
+      # corresponding value from configuration
       YAML::load_file(configfile).each do |key, value|
         if DEFAULTS.has_key? key
           instance_variable_set "@" + key, value
         end
       end
 
+      # use cli supplied watchlist if available
       if options.respond_to? 'watchlist'
         @watchlist = options.watchlist 
       end

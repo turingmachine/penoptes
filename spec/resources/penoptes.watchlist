@@ -13,9 +13,5 @@
 }
 
 'services': {
-  command: 'chkconfig --list | grep :on',
-}
-
-'/etc/*.conf': {
-  comment: 'this is a comment applying to all .conf files in /etc'
+  command: 'chkconfig --list | grep :on'
 }

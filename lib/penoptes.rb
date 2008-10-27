@@ -19,6 +19,7 @@
 
 require 'ostruct'
 require 'optparse'
+require 'logger'
 require 'penoptes/configuration'
 require 'penoptes/watchlist'
 require 'penoptes/repository'
@@ -34,19 +35,21 @@ module Penoptes
   class Application
     def initialize
       register_signal_handlers
-      
       @options = parse_options
+      @log = Logger.new(STDOUT) #TODO
+
       begin
         @configuration = Penoptes::Configuration.new @options
-      rescue LoadError
+      rescue Penoptes::ConfigurationError
         puts 'penoptes: could not load configuration', $!
         terminate 1
       end
 
       begin
         @watchlist = Penoptes::Watchlist.new @configuration.watchlist
-      rescue LoadError
+      rescue Penoptes::WatchlistError
         puts 'penoptes: could not load watchlist', $!
+	terminate 1
       end
 
       @repository = Penoptes::Repository.new
@@ -54,11 +57,12 @@ module Penoptes
     end
 
     def run
-      @watchlist.parse.iterate do |entry|
-        
-      end
+      #@watchlist.parse.iterate do |entry|
+      #  
+      #end
     end
 
+private
     # register signal handlers
     def register_signal_handlers
       %w{ INT KILL QUIT TERM }.each do |signal|
@@ -71,10 +75,11 @@ module Penoptes
       exit exit_status
     end
 
-    # evaluate cli switches
+    # evaluate cli options
     def parse_options
       options = OpenStruct.new
-      scriptname = File.basename($0)
+      scriptname = File.basename $0
+
       begin
         OptionParser.new do |opts|
           opts.banner = "Usage: #{scriptname} [options]"
@@ -106,6 +111,7 @@ module Penoptes
             puts opts.summarize
             terminate
           end
+
         end.parse!
       rescue
         puts "#{scriptname}: " + $!
